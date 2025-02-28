@@ -161,14 +161,18 @@ def preprocess_text(text):
 @st.cache_data
 def load_default_data():
     try:
-        df = pd.read_csv("email.csv")  # Read from email.csv
+        df = pd.read_csv("email.csv")  
+        st.write("Columns in dataset:", df.columns)  # Debugging step
+        df.columns = df.columns.str.strip()  # Remove extra spaces from column names
         if 'Message' in df.columns and 'Category' in df.columns:
             df['cleaned_text'] = df['Message'].apply(preprocess_text)
-            df['Category'] = df['Category'].replace('ham', 'Not Spam')  # Replace ham with Not Spam
+            df['Category'] = df['Category'].replace('ham', 'Not Spam')  
             return df
         else:
+            st.error("CSV file does not have the required columns: 'Message' and 'Category'")
             return None
-    except:
+    except Exception as e:
+        st.error(f"Error loading CSV: {e}")
         return None
 
 # File uploader with styled label
